@@ -78,6 +78,18 @@ namespace Simple.OData.Client
         /// <returns>Self.</returns>
         FT Filter(string filter);
         /// <summary>
+        /// Sets the specified expand filter
+        /// </summary>
+        /// <param name="filter">expand filter</param>
+        /// <returns></returns>
+        FT Filter(IEnumerable<KeyValuePair<string, string>> filter);
+        /// <summary>
+        ///  Sets the specified expand filter
+        /// </summary>
+        /// <param name="filter">expand filter</param>
+        /// <returns></returns>
+        FT Filter(IEnumerable<KeyValuePair<string, ODataExpression>> filter);
+        /// <summary>
         /// Sets the specified OData filter.
         /// </summary>
         /// <param name="expression">The filter expression.</param>

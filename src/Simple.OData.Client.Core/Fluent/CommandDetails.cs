@@ -18,6 +18,8 @@ namespace Simple.OData.Client
         public IDictionary<string, object> NamedKeyValues { get; set; }
         public IDictionary<string, object> EntryData { get; set; }
         public string Filter { get; set; }
+        public List<KeyValuePair<string, string>> FilterColumns { get; private set; }
+        public List<KeyValuePair<string, ODataExpression>> FilterExpressionColumns { get; private set; }
         public ODataExpression FilterExpression { get; set; }
         public string Search { get; set; }
         public long SkipCount { get; set; }
@@ -45,6 +47,8 @@ namespace Simple.OData.Client
             this.ExpandAssociations = new List<KeyValuePair<string, ODataExpandOptions>>();
             this.SelectColumns = new List<string>();
             this.OrderbyColumns = new List<KeyValuePair<string, bool>>();
+            this.FilterColumns = new List<KeyValuePair<string, string>>();
+            this.FilterExpressionColumns = new List<KeyValuePair<string, ODataExpression>>();
             this.MediaProperties = new List<string>();
             this.BatchEntries = batchEntries;
         }
@@ -71,6 +75,8 @@ namespace Simple.OData.Client
             this.ExpandAssociations = details.ExpandAssociations;
             this.SelectColumns = details.SelectColumns;
             this.OrderbyColumns = details.OrderbyColumns;
+            this.FilterColumns = details.FilterColumns;
+            this.FilterExpressionColumns = details.FilterExpressionColumns;
             this.ComputeCount = details.ComputeCount;
             this.IncludeCount = details.IncludeCount;
             this.LinkName = details.LinkName;

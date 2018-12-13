@@ -82,7 +82,7 @@ namespace Simple.OData.Client.Tests
         {
             var people = await _client
                 .For<Person>()
-                .Filter(x => (int)x.Gender == (int)PersonGender.Male)
+                .Filter(x => x.Gender == (int)PersonGender.Male)
                 .FindEntriesAsync();
 
             Assert.True(people.All(x => x.Gender == PersonGender.Male));
@@ -157,6 +157,22 @@ namespace Simple.OData.Client.Tests
             Assert.Equal("Trip in US", (person.Trips as IEnumerable<dynamic>).First().Name);
             Assert.Equal("Ketchum", (person.Friends as IEnumerable<dynamic>).First().LastName);
         }
+        [Fact]
+        public async Task FindPersonExpandAndSelectTripsAndFilteredFriendsDynamic()
+        {
+            var x = ODataDynamic.Expression;
+            var person = await _client
+                .For(x.Person)
+                .Key("russellwhyte")
+                .Expand(x.Trips, x.Friends)
+                .Filter(new List<KeyValuePair<string, ODataExpression>>() { new KeyValuePair<string, ODataExpression>("Friends", x.Friends.LastName == "Ketchum") })
+                .Select(x.Trips.Name)
+                .Select(x.Friends.LastName)
+                .FindEntryAsync();
+            Assert.Equal("Trip in US", (person.Trips as IEnumerable<dynamic>).First().Name);
+            Assert.Equal("Ketchum", (person.Friends as IEnumerable<dynamic>).First().LastName);
+            Assert.Single((person.Friends as IEnumerable<dynamic>));
+        }
 
         [Fact]
         public async Task FindPersonExpandFriendsWithOrderBy()
@@ -170,7 +186,37 @@ namespace Simple.OData.Client.Tests
             //Assert.Equal(3, person.Trips.Count());
             //Assert.Equal(4, person.Friends.Count());
         }
-
+        [Fact]
+        public async Task FindPersonExpandAndFilteredFriendsWithOrderBy()
+        {
+            var person = await _client
+                .For("People")
+                .Key("russellwhyte")
+                .Expand("Friends")
+                .Filter(new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("Friends", "LastName eq 'Ketchum'") })
+                .OrderBy("Friends/LastName")
+                .FindEntryAsync();
+            //Assert.Equal(3, person.Trips.Count());
+            Assert.Single((person["Friends"] as IEnumerable<IDictionary<string, object>>));
+        }
+        [Fact]
+        public async Task FindSpecificPlanItemOnSpecialTrip()
+        {
+            var person = await _client
+                .For("People")
+                .Key("russellwhyte")
+                .Expand("Friends", "Trips/PlanItems")
+                .Filter(new List<KeyValuePair<string, string>>() {
+                    new KeyValuePair<string, string>("Friends", "LastName eq 'Ketchum'"),
+                    new KeyValuePair<string, string>("Trips", "TripId eq 0"),
+                    new KeyValuePair<string, string>("Trips/PlanItems", "PlanItemId eq 12") })
+                .OrderBy("Friends/LastName")
+                .FindEntryAsync();
+            //Assert.Equal(3, person.Trips.Count());
+            Assert.Single((person["Friends"] as IEnumerable<IDictionary<string, object>>));
+            Assert.Single((person["Trips"] as IEnumerable<IDictionary<string, object>>));
+            Assert.Single((person["Trips"] as IEnumerable<IDictionary<string, object>>).First()["PlanItems"] as IEnumerable<IDictionary<string, object>>);
+        }
         [Fact]
         public async Task FindPersonPlanItems()
         {
@@ -401,8 +447,8 @@ namespace Simple.OData.Client.Tests
                             Address = "187 Suffolk Ln.",
                             City = new Location.LocationCity()
                             {
-                                CountryRegion = "United States", 
-                                Name = "Boise", 
+                                CountryRegion = "United States",
+                                Name = "Boise",
                                 Region = "ID"
                             }
                         }
@@ -604,7 +650,7 @@ namespace Simple.OData.Client.Tests
                 .For<PersonWithOpenTypeFields>("Person")
                 .Filter(x => x.OpenTypeString == "Description")
                 .FindEntryAsync();
-                Assert.Equal(@"Description", person.OpenTypeString);
+            Assert.Equal(@"Description", person.OpenTypeString);
         }
 
         [Fact]

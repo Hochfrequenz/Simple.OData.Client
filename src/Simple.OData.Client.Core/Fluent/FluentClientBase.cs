@@ -112,6 +112,18 @@ namespace Simple.OData.Client
             return this as FT;
         }
 
+        public FT Filter(IEnumerable<KeyValuePair<string,string>> filter)
+        {
+            this.Command.Filter(filter);
+            return this as FT;
+        }
+
+        public FT Filter(IEnumerable<KeyValuePair<string, ODataExpression>> filter)
+        {
+            this.Command.Filter(filter);
+            return this as FT;
+        }
+
         public FT Filter(string filter)
         {
             this.Command.Filter(filter);

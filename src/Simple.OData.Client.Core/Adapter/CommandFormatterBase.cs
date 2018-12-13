@@ -148,7 +148,7 @@ namespace Simple.OData.Client
 
         private const string ReservedUriCharacters = @"!*'();:@&=+$,/?#[] ";
 
-        private string EscapeUnescapedString(string text)
+        protected string EscapeUnescapedString(string text)
         {
             return text.ToCharArray().Intersect(ReservedUriCharacters.ToCharArray()).Any()
                 ? Uri.EscapeDataString(text)
